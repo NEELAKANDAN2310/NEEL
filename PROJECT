@@ -1,0 +1,73 @@
+
+public interface Observer {
+    void update(String message);
+}
+public interface Subject {
+    void registerObserver(Observer observer);
+    void removeObserver(Observer observer);
+    void notifyObservers(String message);
+}
+import java.util.ArrayList;
+import java.util.List;
+
+public class ChatRoom implements Subject {
+    private List<Observer> observers;
+    private String message;
+
+    public ChatRoom() {
+        observers = new ArrayList<>();
+    }
+
+    @Override
+    public void registerObserver(Observer observer) {
+        observers.add(observer);
+    }
+
+    @Override
+    public void removeObserver(Observer observer) {
+        observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers(String message) {
+        for (Observer observer : observers) {
+            observer.update(message);
+        }
+    }
+
+    public void newMessage(String message) {
+        this.message = message;
+        notifyObservers(message);
+    }
+}
+
+public class User implements Observer {
+    private String name;
+
+    public User(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public void update(String message) {
+        System.out.println(name + " received message: " + message);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        ChatRoom chatRoom = new ChatRoom();
+
+        User user1 = new User("Alice");
+        User user2 = new User("Bob");
+
+        chatRoom.registerObserver(user1);
+        chatRoom.registerObserver(user2);
+
+        chatRoom.newMessage("Hello, everyone!");
+
+        chatRoom.removeObserver(user1);
+
+        chatRoom.newMessage("Goodbye, Alice!");
+    }
+}
